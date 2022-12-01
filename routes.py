@@ -33,7 +33,7 @@ async def login_for_access_token(request:Request, form_data: OAuth2PasswordReque
     return {"access_token": access_token, "token_type": "bearer"}
 
 
-@router.post("/verify/", response_model=TokenData)
+@router.post("/verify/{token}", response_model=TokenData, status_code=status.HTTP_200_OK)
 async def verify_token(request: Request, token: str ):
         return request.app.token_manager.decode_token(token)
   

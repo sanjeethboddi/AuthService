@@ -29,6 +29,9 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
+app.password_hasher = PasswordHasher()
+app.token_manager = Token_Manager(config.get("SECRET_KEY"), config.get("ALGORITHM"), config.get("ACCESS_TOKEN_EXPIRE_MINUTES"))
+print("Created password hasher and token manager!")
 
 @app.on_event("startup")
 def startup_db_client():
@@ -38,9 +41,7 @@ def startup_db_client():
                 )
     app.database = app.mongodb_client[config["DB_NAME"]]
     print("Connected to the MongoDB database!")
-    app.password_hasher = PasswordHasher()
-    app.token_manager = Token_Manager(config.get("SECRET_KEY"), config.get("ALGORITHM"), config.get("ACCESS_TOKEN_EXPIRE_MINUTES"))
-    print("Created password hasher and token manager!")
+
 
 @app.on_event("shutdown")
 def shutdown_db_client():

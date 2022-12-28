@@ -16,8 +16,19 @@ DB = "auth"
 async def signup(request: Request, response: Response, user: UserRegister = Body(...)):
     hashed_password = request.app.password_hasher.hash_password(user.password)
     user_hashed = {"_id": user.username, "hashed_password": hashed_password}
-    new_user = request.app.database[DB].insert_one(user_hashed)
+    # insert user into database if not already exists
+    if request.app.database[DB].find_one({"_id": user.username}): 
+        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="Username already exists")
     
+    new_user = request.app.database[DB].insert_one(user_hashed)
+   # return response code
+    if new_user:
+        response.status_code = status.HTTP_201_CREATED
+        response.body = "User created"
+    else:
+        response.status_code = status.HTTP_400_BAD_REQUEST
+        response.body = "User not created"
+    return response
 
 @router.post("/login",response_model=Token)
 async def login_for_access_token(request:Request, form_data: OAuth2PasswordRequestForm = Depends()):

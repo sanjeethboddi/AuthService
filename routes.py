@@ -19,7 +19,7 @@ def signup(request: Request, response: Response, user: UserRegister = Body(...))
     user_hashed = {"_id": user.username, "hashed_password": hashed_password}
     print(user.username, user.password, user_hashed, len(user.username), len(user.password))
     if user.username is None or user.password is None or len(user.username) <5 or len(user.password) <5:
-        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="Username or password cannot be empty")
+        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="Username or password cannot less than 5 characters")
 
     # insert user into database if not already exists
     if request.app.database[DB].find_one({"_id": user.username}): 
